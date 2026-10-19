@@ -1,0 +1,7 @@
+// TaskPulse: build raíz de Android. Sólo aporta versiones compartidas del SDK.
+// Los plugins (AGP, Kotlin, Compose, KSP) se declaran en settings.gradle.
+ext {
+    minSdkVersion = 26
+    compileSdkVersion = 35
+    targetSdkVersion = 35
+}

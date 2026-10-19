@@ -1,0 +1,70 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.compose'
+    id 'com.google.devtools.ksp'
+}
+
+android {
+    namespace 'com.taskpulse'
+    compileSdk rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId 'com.taskpulse'
+        minSdk rootProject.ext.minSdkVersion
+        targetSdk rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName '1.0'
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    buildFeatures {
+        compose true
+    }
+}
+
+dependencies {
+    def composeBom = platform('androidx.compose:compose-bom:2024.09.03')
+    implementation composeBom
+
+    // Nucleo de Android y lifecycle para ViewModels
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.6'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6'
+    implementation 'androidx.activity:activity-compose:1.9.2'
+
+    // Jetpack Compose (UI y Material)
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.material:material'
+
+    // Jetpack Compose for Wear OS + Material para reloj
+    implementation 'androidx.wear.compose:compose-material:1.4.1'
+    implementation 'androidx.wear.compose:compose-foundation:1.4.1'
+    implementation 'androidx.wear.compose:compose-navigation:1.4.1'
+
+    // Soporte de Wear OS: SwipeDismiss
+    implementation 'androidx.wear:wear:1.3.0'
+
+    // Room: base de datos local en el reloj
+    implementation 'androidx.room:room-runtime:2.7.2'
+    implementation 'androidx.room:room-ktx:2.7.2'
+    ksp 'androidx.room:room-compiler:2.7.2'
+}

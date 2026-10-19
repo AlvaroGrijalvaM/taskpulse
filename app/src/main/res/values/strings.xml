@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">TaskPulse</string>
+
+    <!-- Texto del cuerpo de la notificación de recordatorio.
+         %1$s recibe la hora programada de la tarea. -->
+    <string name="reminder_body">Es momento de: %1$s</string>
+
+    <!-- Canal de notificaciones que agrupa los recordatorios. -->
+    <string name="channel_name">Recordatorios de tareas</string>
+    <string name="channel_description">Avisos cuando llega la hora de una tarea</string>
+</resources>

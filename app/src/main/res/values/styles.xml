@@ -1,0 +1,9 @@
+<resources>
+
+    <!-- Tema base de la actividad. La UI real se dibuja con Jetpack Compose,
+         así que aquí sólo se fija un fondo oscuro coherente con Wear OS. -->
+    <style name="Theme.TaskPulse" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+
+</resources>

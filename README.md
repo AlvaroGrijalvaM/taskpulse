@@ -1,97 +1,87 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# TaskPulse
 
-# Getting Started
+Aplicación independiente para relojes con Wear OS: crea tareas con fecha y hora
+y recibe un recordatorio —con sonido y vibración— en el momento programado.
+Todo funciona en el propio reloj, sin teléfono, sin Internet ni cuenta de usuario.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+Desarrollada en Kotlin con Jetpack Compose for Wear OS. Las tareas se guardan
+con Room (SQLite local) y las alarmas se programan con `AlarmManager`, de modo
+que los recordatorios se disparan aunque la app esté cerrada.
 
-## Step 1: Start Metro
+## Funciones
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- Lista de tareas pendientes ordenadas por fecha, con las vencidas destacadas.
+- Crear, editar, completar y eliminar tareas desde el reloj.
+- Selector manual de fecha y hora con ruedas de Wear OS (día, hora y minuto),
+  con soporte de la corona rotativa.
+- Recordatorio con notificación, sonido y vibración a la hora programada.
+- Al tocar la notificación (o "Open on watch" desde un móvil pareado) se abre
+  el detalle de la tarea, listo para completarla o editarla.
+- Interruptor global en Ajustes: al apagarlo cancela las alarmas pendientes
+  y al reactivarlas las vuelve a programar.
+- Reprogramación automática de alarmas tras reiniciar el reloj y al mostrar
+  la lista: ninguna alarma programada se pierde.
+- Ajustes con estado de los permisos que necesita el sistema de avisos.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Compilar y probar
 
-```sh
-# Using npm
-npm start
+Requisitos: Android Studio (con SDK 35 y build-tools 35.0.1), JDK 17 y un
+reloj o emulador con Wear OS (Android 8.0 / API 26 o superior).
 
-# OR using Yarn
-yarn start
-```
+1. Abrir esta carpeta con Android Studio (el proyecto Gradle está en la raíz).
+2. Crear un emulador de Wear OS: **Device Manager → Create device → Wear OS**
+   (por ejemplo, "Wear OS Large Round", API 35 con imagen Google Play).
+3. Instalar y ejecutar: `gradlew.bat :app:installDebug` (Windows) o
+   `./gradlew :app:installDebug` (macOS/Linux), o botón *Run* de Android Studio.
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+También se puede compilar el APK desde la terminal:
 
 ```sh
-bundle install
+./gradlew.bat :app:assembleDebug
+# APK: app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Then, and every time you update your native dependencies, run:
+Para depurar con el reloj conectado (alarmas recibidas, avisos publicados,
+intents de notificación):
 
 ```sh
-bundle exec pod install
+adb logcat -s TaskPulse
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## Permisos y limitaciones
 
-```sh
-# Using npm
-npm run ios
+- `POST_NOTIFICATIONS`: se solicita al abrir la app (Android 13+). Sin él no
+  se muestran recordatorios.
+- `SCHEDULE_EXACT_ALARM` / `USE_EXACT_ALARM`: permiten alarmas puntuales. Si
+  el sistema los deniega, la app recurre a una alarma inexacta (el aviso puede
+  llegar algo tarde) y la pantalla de Ajustes lo indica.
+- El sonido y la vibración dependen de la configuración del reloj (modo no
+  molestar, volúmenes, canal de notificaciones de la app). La app no puede
+  forzarlos; la recreación del canal en cada aviso garantiza que sus ajustes
+  vigentes se apliquen siempre.
+- Tras un reinicio, `BootReceiver` vuelve a programar las alarmas pendientes
+  desde la base de datos local. Si el reloj estuvo apagado y un recordatorio
+  ya pasó, la tarea aparece como vencida en la lista sin emitir el aviso.
+- Borrar o completar una tarea descarta también su notificación pendiente.
 
-# OR using Yarn
-yarn ios
+## Solución de problemas
+
+- **La build falla con `Unable to delete directory ...`**: borra las carpetas
+  `build/` y `app/build` (o ejecuta `attrib -R -H -S "<ruta>\build" /S /D` en
+  Windows) y vuelve a compilar. Suele deberse a archivos heredados de otra
+  ubicación con atributos especiales.
+- **No llega sonido o vibración**: comprueba el canal en el reloj
+  (Ajustes → Apps → TaskPulse → Notificaciones) y los volúmenes; con
+  `adb logcat -s TaskPulse` se ve si el aviso se publicó y con qué motivo.
+
+## Estructura
+
 ```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+app/src/main/java/com/taskpulse/
+├── data/          # Room: entidad Task, DAO, base de datos y repositorio
+├── reminders/     # AlarmManager: programación, receptores, arranque y
+│                  # preferencia global de recordatorios
+├── notifications/ # Canal y notificación del recordatorio
+├── ui/            # ViewModels, navegación (SwipeDismiss) y pantallas Compose
+└── util/          # Formato de fecha y hora
+```
